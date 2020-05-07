@@ -1,0 +1,41 @@
+<html>      
+    <div id=jam></div>      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>      
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>      
+    <script type = "text/javascript">        
+    WebSocketTest();
+    function WebSocketTest() {      
+        if ("WebSocket" in window) {
+            var ws_stomp_display = new SockJS( 'http://152.118.148.95:15674/stomp');               
+            var client_display = Stomp.over(ws_stomp_display);                
+            var mq_queue_display = "/exchange/1606882540/fffff";                
+            var on_connect_display = function() {                  
+                console.log('connected');                  
+                client_display.subscribe(mq_queue_display, on_message_display);                
+            };                
+            var on_error_display =  function() {                  
+                console.log('error');                
+            };                
+            var on_message_display = function(m) {               
+                console.log('message received');                  
+                $('#status').append(m.body + "<br>");         
+            };                
+            client_display.connect('0806444524', '0806444524', on_connect_display, on_error_display, '/0806444524');            
+        } 
+        else {               
+            // The browser doesn't support WebSocket               
+            alert("WebSocket NOT supported by your Browser!");            
+        }       
+     }      
+     </script>
+
+     <body>
+        <div id="connected"></div>
+        <form action="" id="download" method="post">
+            <input name="url" type="text" required />
+            <input type="submit" value="Download" />
+        </form>
+        <p id="status"></p>
+     </body>
+</html>
