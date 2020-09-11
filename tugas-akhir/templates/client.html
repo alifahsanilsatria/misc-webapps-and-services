@@ -1,0 +1,71 @@
+<html>      
+    <div id=jam></div>      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>      
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>      
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>      
+    <script type = "text/javascript">        
+    // WebSocketServer5();
+    WebSocketTest();
+    function WebSocketTest() {      
+        if ("WebSocket" in window) {
+            var ws_stomp_display = new SockJS( 'http://152.118.148.95:15674/stomp');               
+            var client_display = Stomp.over(ws_stomp_display);                
+            var mq_queue_display = "/exchange/1606882540_TOPIC/server";                
+            var on_connect_display = function() {        
+                console.log('connected');                  
+                client_display.subscribe(mq_queue_display, on_message_display);                
+            };
+            var on_error_display =  function() {                  
+                console.log('error');       
+            };                
+            var on_message_display = function(m) {             
+                // console.log('message received from server');
+                message = JSON.parse(m.body)
+                if ('server2' in message){
+                    result = message['server2'].split('-')
+                    url_number = '#' + result[0]
+                    percentage = result[1]
+                    $(url_number).text(percentage);
+                }
+                else if ('server5' in message) {
+                    $('#live-time').text(message['server5']);
+                }
+                else if ('server3' in message) {
+                    $(".compression").text(message['server3']);
+                }
+                else if ('server3-link' in message) {
+                    console.log('masuk server3-link');
+                    $("#secured-link").text(message['server3-link'])
+                }
+            };
+            client_display.connect('0806444524', '0806444524', on_connect_display, on_error_display, '/0806444524');            
+        }
+        else {   
+            // The browser doesn't support WebSocket   
+            alert("WebSocket NOT supported by your Browser!");  
+        }       
+     }
+
+     </script>
+
+     <body>
+        <p id="live-time"></p>
+        <table>
+            <tr>
+                <th>No</th>
+                <th>URL</th>
+                <th>Download</th>
+                <th>Kompresi</th>
+            </tr>
+            {% for url in url_list %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{url}}</td>
+                <td id="{{loop.index}}"></td>
+                <td class="compression"></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <p id="secured-link"></p>
+     </body>
+</html>
